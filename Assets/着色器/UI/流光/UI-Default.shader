@@ -4,13 +4,13 @@ Shader "UI/Default"
 	{
 		[PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
 		_Color ("Tint", Color) = (1,1,1,1)
-		
+		_Blur("Edge Blur", Range(0, 0.3)) = 0.01
 		_StencilComp ("Stencil Comparison", Float) = 8
 		_Stencil ("Stencil ID", Float) = 0
 		_StencilOp ("Stencil Operation", Float) = 0
 		_StencilWriteMask ("Stencil Write Mask", Float) = 255
 		_StencilReadMask ("Stencil Read Mask", Float) = 255
-
+		_BackgroundColor("Background Color", Color) = (1.0, 0.8, 0.7, 1.0)
 		_ColorMask ("Color Mask", Float) = 15
 
 		[Toggle(UNITY_UI_ALPHACLIP)] _UseUIAlphaClip ("Use Alpha Clip", Float) = 0
@@ -54,6 +54,11 @@ Shader "UI/Default"
 			#include "UnityCG.cginc"
 			#include "UnityUI.cginc"
 
+#define vec2 float2
+#define vec3 float3
+#define vec4 float4
+#define mat2 float2x2
+#define iResolution _ScreenParams
 			#pragma multi_compile __ UNITY_UI_ALPHACLIP
 			
 			struct appdata_t
@@ -70,11 +75,11 @@ Shader "UI/Default"
 				half2 texcoord  : TEXCOORD0;
 				float4 worldPosition : TEXCOORD1;
 			};
-			
+			vec4 _BackgroundColor;
+			float _Blur;
 			fixed4 _Color;
 			fixed4 _TextureSampleAdd;
 			float4 _ClipRect;
-
 			v2f vert(appdata_t IN)
 			{
 				v2f OUT;
@@ -88,6 +93,7 @@ Shader "UI/Default"
 				#endif
 				
 				OUT.color = IN.color * _Color;
+				OUT.color = smoothstep(-_Blur, _Blur, IN.vertex.x);
 				return OUT;
 			}
 

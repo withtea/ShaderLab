@@ -4,9 +4,11 @@
 	{
 		[PerRendererData] _MainTex("Sprite Texture", 2D) = "white" {}
 		_Color("Tint", Color) = (1, 1, 1, 1)
+		[MaterialToggle] _OffSet("OffSet", float) = 0
 		[MaterialToggle] PixelSnap("Pixel snap", float) = 0
 
 		/* Flowlight */
+		_FlowlightMaskTex("Mask Texture", 2D) = "white" {}
 		_FlowlightTex("Add Move Texture", 2D) = "white" {}
 		_FlowlightColor("Flowlight Color", Color) = (0, 0, 0, 1)
 		_Power("Power", float) = 1
@@ -23,16 +25,16 @@
 		/* -- */
 	}
 
-		SubShader
+	SubShader
 	{
 		Tags
-	{
-		"Queue" = "Transparent"
-		"IgnoreProjector" = "True"
-		"RenderType" = "Transparent"
-		"PreviewType" = "Plane"
-		"CanUseSpriteAtlas" = "True"
-	}
+		{
+			"Queue" = "Transparent"
+			"IgnoreProjector" = "True"
+			"RenderType" = "Transparent"
+			"PreviewType" = "Plane"
+			"CanUseSpriteAtlas" = "True"
+		}
 
 		Cull Off
 		Lighting Off
@@ -41,16 +43,15 @@
 
 		/* UI */
 		Stencil
-	{
-		Ref[_Stencil]
-		Comp[_StencilComp]
-		Pass[_StencilOp]
-		ReadMask[_StencilReadMask]
-		WriteMask[_StencilWriteMask]
-	}
+		{
+			Ref[_Stencil]
+			Comp[_StencilComp]
+			Pass[_StencilOp]
+			ReadMask[_StencilReadMask]
+			WriteMask[_StencilWriteMask]
+		}
 		/* -- */
-
-		Pass
+	Pass
 	{
 		CGPROGRAM
 #pragma vertex vert
@@ -83,27 +84,26 @@
 	float _Power;
 	sampler2D _FlowlightTex;
 	fixed4 _FlowlightTex_ST;
+	sampler2D _FlowlightMaskTex;
+	fixed4 _FlowlightMaskTex_ST;
 	fixed _SpeedX;
 	fixed _SpeedY;
 	fixed x = 0;
+	float _OffSet;
 	/* --------- */
-
 	v2f vert(appdata_t IN)
 	{
 		v2f OUT;
 		OUT.vertex = mul(UNITY_MATRIX_MVP, IN.vertex);
 		OUT.texcoord = IN.texcoord;
-
 		/* Flowlight */
 		OUT.texflowlight = TRANSFORM_TEX(IN.texcoord, _FlowlightTex);
 		OUT.texflowlight.x += _Time * _SpeedX;
 		OUT.texflowlight.y += _Time * _SpeedY;
-
 		OUT.color = IN.color * _Color;
 #ifdef PIXELSNAP_ON
 		OUT.vertex = UnityPixelSnap(OUT.vertex);
 #endif
-
 		return OUT;
 	}
 
@@ -112,12 +112,15 @@
 	fixed4 frag(v2f IN) : SV_Target
 	{
 		fixed4 c = tex2D(_MainTex, IN.texcoord)*IN.color;
-
-	/* Flowlight */
-	fixed4 cadd = tex2D(_FlowlightTex, IN.texflowlight) * _Power;
-	cadd.rgb *= c.rgb;
-	c.rgb += cadd.rgb;
-	c.rgb *= c.a;
+		fixed4 cmask = tex2D(_FlowlightMaskTex, IN.texcoord);
+	if (cmask.a != 0)
+	{
+		/* Flowlight */
+		fixed4 cadd = tex2D(_FlowlightTex, IN.texflowlight) * _Power;
+		cadd.rgb *= c.rgb;
+		c.rgb += cadd.rgb;
+		c.rgb *= c.a;
+	}
 	/* --------- */
 
 	return c;
