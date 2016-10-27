@@ -119,8 +119,8 @@
 		fixed4 cadd = tex2D(_FlowlightTex, IN.texflowlight) * _Power;
 		cadd.rgb *= c.rgb;
 		c.rgb += cadd.rgb;
-		c.rgb *= c.a;
 	}
+	c.rgb *= c.a;
 	/* --------- */
 
 	return c;

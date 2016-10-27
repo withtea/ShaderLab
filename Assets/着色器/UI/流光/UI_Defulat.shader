@@ -1,4 +1,4 @@
-Shader "UI/Default"
+Shader "Custom/OutMotion"
 {
 	Properties
 	{
@@ -49,7 +49,7 @@ Shader "UI/Default"
 		CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
-			#pragma target 2.0
+			#pragma target 3.0
 
 			#include "UnityCG.cginc"
 			#include "UnityUI.cginc"
@@ -93,7 +93,6 @@ Shader "UI/Default"
 				#endif
 				
 				OUT.color = IN.color * _Color;
-				OUT.color = smoothstep(-_Blur, _Blur, IN.vertex.x);
 				return OUT;
 			}
 
@@ -102,7 +101,22 @@ Shader "UI/Default"
 			fixed4 frag(v2f IN) : SV_Target
 			{
 				half4 color = (tex2D(_MainTex, IN.texcoord) + _TextureSampleAdd) * IN.color;
-				
+				float2 uv = IN.texcoord.xy;
+				float a;
+				float4 coloradd = float4(1,1,1,1);
+				for (int j = -2; j <= 0; ++j)
+				{
+					for (int i = -2; i <= 0; ++i)
+					{
+						float3 rgb = tex2D(_MainTex, uv + float2(i, j) ).rgb;
+						if (rgb.r == 0)
+						{
+							color += coloradd;
+							break;
+						}
+					}
+				}
+
 				color.a *= UnityGet2DClipping(IN.worldPosition.xy, _ClipRect);
 				
 				#ifdef UNITY_UI_ALPHACLIP
