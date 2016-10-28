@@ -19,7 +19,7 @@ namespace UnityStandardAssets.ImageEffects
 
         public OverlayBlendMode blendMode = OverlayBlendMode.Overlay;
         public float intensity = 1.0f;
-        public Texture2D texture = null;
+       // public Texture2D texture = null;
 		public Texture2D noise_mask = null;
 	    public Texture2D alpha_mask = null;
 	    public Texture2D back_texture = null;
@@ -66,7 +66,7 @@ namespace UnityStandardAssets.ImageEffects
 
             overlayMaterial.SetVector("_UV_Transform", UV_Transform);
             overlayMaterial.SetFloat ("_Intensity", intensity);
-            overlayMaterial.SetTexture ("_Overlay", texture);
+            //overlayMaterial.SetTexture ("_Overlay", texture);
 			overlayMaterial.SetTexture( "_Eliminatelay", texture_mask );
 			overlayMaterial.SetTexture( "_Noise", noise_mask );
 			overlayMaterial.SetTexture( "_AlphaLay", alpha_mask );
