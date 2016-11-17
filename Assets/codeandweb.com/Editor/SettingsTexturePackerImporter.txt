@@ -1,0 +1,8 @@
+version: 2
+importPivots: 1
+tpsheetFileNames:
+- Assets/着色器/UI/流动/sprites/Texture2D.tps.tpsheet
+textureFileNames:
+- Assets/着色器/UI/流动/sprites/Texture2D.png
+normalmapFileNames:
+- 
