@@ -1,4 +1,4 @@
-﻿Shader "UI/Unlit/RimFlash"
+﻿Shader "UI/Unlit/RimFlashOnMask"
 {
 	Properties
 	{
@@ -92,6 +92,7 @@ SubShader
 		half4 _MainTex_TexelSize;
 		float _Intensity;
 		float _StartPos;
+		float _AreaIntensity;
 		float _Speed;
 		fixed4 frag(v2f IN) : SV_Target
 		{
@@ -115,8 +116,9 @@ SubShader
 			fixed finala = abs(c.a*4 - (a0 + a1 + a2 + a3));
 			AngleDis *= finala;
 			// 打高光  
-			c += fixed4(_RimLightColor.rgb*AngleDis, 0)* _Power;
-			c.rgb *= c.a;
+			float a = c.a;
+			c = fixed4(_RimLightColor.rgb*AngleDis, 0)* _Power;
+			c.rgb *= a;
 			return c;
 		}
 		ENDCG
