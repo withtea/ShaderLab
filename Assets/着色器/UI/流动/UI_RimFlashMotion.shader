@@ -112,7 +112,8 @@ SubShader
 			fixed a1 = tex2D(_MainTex, IN.texcoord + TexOffset*fixed2(_Intensity,-_Intensity)).a;
 			fixed a2 = tex2D(_MainTex, IN.texcoord + TexOffset*fixed2(-_Intensity, _Intensity)).a;
 			fixed a3 = tex2D(_MainTex, IN.texcoord + TexOffset*fixed2(-_Intensity, -_Intensity)).a;
-			fixed finala = abs(c.a*4 - (a0 + a1 + a2 + a3));
+			//fixed finala = abs(c.a*4 - (a0 + a1 + a2 + a3));
+			fixed finala = 0.01;
 			AngleDis *= finala;
 			// 打高光  
 			c += fixed4(_RimLightColor.rgb*AngleDis, 0)* _Power;
