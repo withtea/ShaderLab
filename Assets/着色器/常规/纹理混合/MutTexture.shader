@@ -5,7 +5,6 @@
 		_FrontTex("FrontTexture", 2D) = "white" {}
 		_BackTex("BackTexture", 2D) = "white" {}
 		_AlphaFront("AlphaFront",Range(0,1)) = 1
-		_AlphaBack("AlphaBack",Range(0,1)) = 1
 	}
 	SubShader
 	{
@@ -45,7 +44,6 @@
 			sampler2D _BackTex;
 			float4 _BackTex_ST;
 			float _AlphaFront;
-			float _AlphaBack;
 			v2f vert (appdata v)
 			{
 				v2f o;
@@ -62,11 +60,10 @@
 				// sample the texture
 				fixed4 col = tex2D(_FrontTex, i.uv);
 				fixed4 colx = tex2D(_BackTex, i.uv2);
-				fixed4 o = col;
+				fixed4 o = colx;
 				col.rgb *= col.a*_AlphaFront;
-				colx.rgb *= colx.a*_AlphaBack;
+				colx.rgb *= colx.a;
 				o.rgb = colx.rgb+ col.rgb;
-				o.rgb *= colx.a;
 				return o;
 			}
 			ENDCG
